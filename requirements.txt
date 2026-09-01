@@ -1,0 +1,10 @@
+tensorflow
+keras
+fastapi
+uvicorn
+pandas
+numpy
+seaborn
+matplotlib
+datasets
+scikit-learn
