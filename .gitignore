@@ -1,3 +1,8 @@
 /__pycache__
 venv/
 venv
+
+FILES_SUMMARY.md
+DEPLOYMENT.md
+
+env.example

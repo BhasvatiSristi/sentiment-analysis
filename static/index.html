@@ -3,9 +3,242 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <meta name="theme-color" content="#0f172a">
+    <title>MoodLens - AI Emotion Analysis</title>
+    <link rel="stylesheet" href="/static/styles.css">
 </head>
 <body>
-    <h1>App running</h1>
+    <div class="background-blur"></div>
+    <div class="stars"></div>
+
+    <div class="layout">
+        <!-- Sidebar History -->
+        <aside class="history-sidebar">
+            <div class="sidebar-header">
+                <h2>History</h2>
+                <button class="btn-icon" id="clearHistoryBtn" title="Clear history">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="3 6 5 4 21 4 23 6 23 20a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V6"></polyline>
+                        <line x1="10" y1="11" x2="10" y2="17"></line>
+                        <line x1="14" y1="11" x2="14" y2="17"></line>
+                        <line x1="5" y1="4" x2="19" y2="4"></line>
+                    </svg>
+                </button>
+            </div>
+            <div class="history-list" id="historyList">
+                <p class="history-empty">No analysis history yet</p>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="header">
+                <div class="header-content">
+                    <div class="logo">
+                        <div class="logo-icon">🧠</div>
+                        <h1>MoodLens</h1>
+                        <p class="tagline">Understand emotions with AI</p>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Primary Container -->
+            <div class="container">
+                <!-- Input Section -->
+                <section class="input-section glass-panel">
+                    <div class="section-header">
+                        <h2>Analyze Text</h2>
+                        <p class="section-subtitle">Enter or paste text to detect emotional sentiment</p>
+                    </div>
+
+                    <div class="input-wrapper">
+                        <textarea 
+                            id="textInput" 
+                            class="text-input"
+                            placeholder="Share your thoughts, feelings, or any text you'd like to analyze..."
+                            maxlength="2000"
+                        ></textarea>
+                        <div class="char-counter">
+                            <span id="charCount">0</span><span class="char-total">/2000</span>
+                        </div>
+                    </div>
+
+                    <button id="analyzeBtn" class="btn-analyze" onclick="analyzeEmotion()">
+                        <span class="btn-content">
+                            <span class="btn-icon">✨</span>
+                            <span class="btn-text">Analyze Mood</span>
+                        </span>
+                        <span class="btn-spinner"></span>
+                    </button>
+                </section>
+
+                <!-- Results Section -->
+                <div id="resultsContainer" class="results-container hidden">
+                    <!-- Primary Result Card -->
+                    <section class="result-card glass-panel">
+                        <div class="result-header">
+                            <h2>Detected Mood</h2>
+                            <span class="result-badge" id="resultBadge">confident</span>
+                        </div>
+
+                        <div class="emotion-display">
+                            <div class="emotion-visual">
+                                <div id="emotionEmoji" class="emotion-emoji">😊</div>
+                                <div class="emotion-glow"></div>
+                            </div>
+
+                            <div class="emotion-details">
+                                <h3 id="emotionLabel" class="emotion-name">Neutral</h3>
+                                <p id="confidenceText" class="confidence-text">Confidence: 0%</p>
+                                
+                                <div class="confidence-bar-container">
+                                    <div class="confidence-bar-background">
+                                        <div id="confidenceBar" class="confidence-bar-fill"></div>
+                                    </div>
+                                </div>
+
+                                <p class="emotion-description" id="emotionDescription">
+                                    Your text expresses a balanced emotional state
+                                </p>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Probability Distribution -->
+                    <section class="probability-section glass-panel">
+                        <div class="section-header">
+                            <h2>Emotional Spectrum</h2>
+                            <p class="section-subtitle">Distribution across all emotions</p>
+                        </div>
+
+                        <div class="probabilities-grid">
+                            <div class="probability-card">
+                                <div class="prob-header">
+                                    <span class="prob-emoji">😢</span>
+                                    <span class="prob-label">Sadness</span>
+                                </div>
+                                <div class="prob-bar-container">
+                                    <div class="prob-bar-background">
+                                        <div id="bar-sadness" class="prob-bar-fill" data-color="sadness"></div>
+                                    </div>
+                                </div>
+                                <span id="prob-sadness" class="prob-value">0%</span>
+                            </div>
+
+                            <div class="probability-card">
+                                <div class="prob-header">
+                                    <span class="prob-emoji">😄</span>
+                                    <span class="prob-label">Joy</span>
+                                </div>
+                                <div class="prob-bar-container">
+                                    <div class="prob-bar-background">
+                                        <div id="bar-joy" class="prob-bar-fill" data-color="joy"></div>
+                                    </div>
+                                </div>
+                                <span id="prob-joy" class="prob-value">0%</span>
+                            </div>
+
+                            <div class="probability-card">
+                                <div class="prob-header">
+                                    <span class="prob-emoji">❤️</span>
+                                    <span class="prob-label">Love</span>
+                                </div>
+                                <div class="prob-bar-container">
+                                    <div class="prob-bar-background">
+                                        <div id="bar-love" class="prob-bar-fill" data-color="love"></div>
+                                    </div>
+                                </div>
+                                <span id="prob-love" class="prob-value">0%</span>
+                            </div>
+
+                            <div class="probability-card">
+                                <div class="prob-header">
+                                    <span class="prob-emoji">😠</span>
+                                    <span class="prob-label">Anger</span>
+                                </div>
+                                <div class="prob-bar-container">
+                                    <div class="prob-bar-background">
+                                        <div id="bar-anger" class="prob-bar-fill" data-color="anger"></div>
+                                    </div>
+                                </div>
+                                <span id="prob-anger" class="prob-value">0%</span>
+                            </div>
+
+                            <div class="probability-card">
+                                <div class="prob-header">
+                                    <span class="prob-emoji">😨</span>
+                                    <span class="prob-label">Fear</span>
+                                </div>
+                                <div class="prob-bar-container">
+                                    <div class="prob-bar-background">
+                                        <div id="bar-fear" class="prob-bar-fill" data-color="fear"></div>
+                                    </div>
+                                </div>
+                                <span id="prob-fear" class="prob-value">0%</span>
+                            </div>
+
+                            <div class="probability-card">
+                                <div class="prob-header">
+                                    <span class="prob-emoji">😲</span>
+                                    <span class="prob-label">Surprise</span>
+                                </div>
+                                <div class="prob-bar-container">
+                                    <div class="prob-bar-background">
+                                        <div id="bar-surprise" class="prob-bar-fill" data-color="surprise"></div>
+                                    </div>
+                                </div>
+                                <span id="prob-surprise" class="prob-value">0%</span>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Analyzed Text Display -->
+                    <section class="analyzed-text-section glass-panel">
+                        <div class="section-header">
+                            <h2>Original Text</h2>
+                        </div>
+                        <p id="displayedText" class="displayed-text"></p>
+                    </section>
+
+                    <!-- Action Buttons -->
+                    <div class="action-buttons">
+                        <button class="btn-secondary" onclick="analyzeAnother()">
+                            <span>Analyze Another</span>
+                        </button>
+                        <button class="btn-secondary" onclick="copyResult()">
+                            <span id="copyText">Copy Result</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Error State -->
+                <div id="errorContainer" class="error-state glass-panel hidden">
+                    <div class="error-content">
+                        <div class="error-icon">⚠️</div>
+                        <h3>Analysis Error</h3>
+                        <p id="errorText"></p>
+                    </div>
+                    <button class="btn-secondary" onclick="closeError()">Dismiss</button>
+                </div>
+
+                <!-- Empty State -->
+                <div id="emptyState" class="empty-state">
+                    <div class="empty-content">
+                        <div class="empty-icon">💭</div>
+                        <h3>What's on your mind?</h3>
+                        <p>Analyze text to uncover emotional sentiment with AI-powered insights</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <footer class="footer">
+                <p>MoodLens © 2024 — Powered by Advanced AI</p>
+            </footer>
+        </main>
+    </div>
+
+    <script src="/static/script.js"></script>
 </body>
 </html>
